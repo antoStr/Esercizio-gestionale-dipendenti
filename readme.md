@@ -1,3 +1,3 @@
 Risorse utilizzate:
 
-- [Flowchart](www.lucidchart.com)
+- (Flowchart)[www.lucidchart.com]
