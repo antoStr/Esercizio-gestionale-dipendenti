@@ -1,8 +1,8 @@
 Risorse utilizzate:
 
-- Eclipse IDE - https://eclipseide.org/
-- Visual Studio Code - https://code.visualstudio.com/
-- MySQL Community Edition - https://www.mysql.com/products/community/
+- [Eclipse IDE](https://eclipseide.org/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [MySQL Community Edition](https://www.mysql.com/products/community/)
 - [Flowchart](https://www.lucidchart.com/pages)
 
 ---
