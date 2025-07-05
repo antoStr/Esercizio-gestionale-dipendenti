@@ -37,8 +37,14 @@ create table dipendenti (
 
 # Creazione server Tomcat
 
-Una volta su eclipse dobbiamo entrare nella prospettiva di Java EE (Java Enterprise Edition, serve per creare applicazioni più robuste per web services)
+Una volta su eclipse dobbiamo entrare nella prospettiva di Java EE (Java Enterprise Edition, serve per creare applicazioni più robuste per web services):
 
 ![view](/res/image.png)
 
-Se non dovremmo avere questa prospettiva possiamo aprirla di qui
+Se non dovremmo avere questa prospettiva possiamo aprirla di qui:
+
+![mod-view](/res/mod_view.png)
+
+Ed inserisco la nuova prospettiva:
+
+![mod-view](/res/javaeeview.png)
