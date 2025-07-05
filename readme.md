@@ -39,6 +39,6 @@ create table dipendenti (
 
 Una volta su eclipse dobbiamo entrare nella prospettiva di Java EE (Java Enterprise Edition, serve per creare applicazioni più robuste per web services)
 
-![alt text](image.png)
+![view](../Esercizio-gestionale-dipendenti/res/image.png)
 
 Se non dovremmo avere questa prospettiva possiamo aprirla di qui
