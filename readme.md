@@ -37,6 +37,8 @@ create table dipendenti (
 
 # Creazione server Tomcat
 
+## Installazione Server Tomcat
+
 Una volta su eclipse dobbiamo entrare nella prospettiva di Java EE (Java Enterprise Edition, serve per creare applicazioni più robuste per web services):
 
 ![view](/res/image.png)
@@ -49,6 +51,8 @@ Ed inserisco la nuova prospettiva:
 
 ![mod-view1](/res/javaeeview.png)
 
+---
+
 Una volta selezionata la prospettiva corretta, andiamo nella tab dei servers ed installiamo Tomcat.
 
 ![mod-view2](/res/serverstab.png)
@@ -56,3 +60,17 @@ Una volta selezionata la prospettiva corretta, andiamo nella tab dei servers ed 
 Se non dovessi vedere la tab server, posso andare in `Window> Show View> Servers`
 
 ![mod-view3](/res/editserverstab.png)
+
+---
+
+### (?) Che cosa è Tomcat? Che cosa è un server?
+
+Un server è un computer o un programma che offre servizi ad altri computer chiamati client, in questo caso di web app e web applications, il suo obiettivo è quello di fornire pagine web.
+Quando apriamo un sito web, il browser manda una richiesta al server che ospita quel sito, il server riceve la richiesta, prende la pagina e ce la rimanda indietro al browser che ce la fa visualizzare.
+
+**Perchè avviene tutto questo?**
+Perchè il nostro PC non ha i dati del sito o in generale nessun dato di qualsiasi sito in rete che al contrario sono salvati sui server che conserva file dei siti, gestisce chi può vederli e risponde a chi li chiede.
+
+Tomcat è un tipo di server specializzato in Java, in particolare è progettato per eseguire applicazioni scritte in java nelle servlet e JSP. Tomcat riceve richieste dal browser, esegue codice scritto in java sul server e restituisce le risposte (pagine HTML, dati JSON, ecc.). E' uno strumento per lo sviluppo e deployment di applicazioni web in Java.
+
+---
