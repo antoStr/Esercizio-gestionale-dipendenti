@@ -1,4 +1,4 @@
-Risorse utilizzate:
+## Risorse utilizzate:
 
 - [Eclipse IDE](https://eclipseide.org/)
 - [Visual Studio Code](https://code.visualstudio.com/)
@@ -37,4 +37,8 @@ create table dipendenti (
 
 # Creazione server Tomcat
 
-C
+Una volta su eclipse dobbiamo entrare nella prospettiva di Java EE (Java Enterprise Edition, serve per creare applicazioni più robuste per web services)
+
+![alt text](image.png)
+
+Se non dovremmo avere questa prospettiva possiamo aprirla di qui
