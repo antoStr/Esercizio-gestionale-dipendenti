@@ -47,4 +47,12 @@ Se non dovremmo avere questa prospettiva possiamo aprirla di qui:
 
 Ed inserisco la nuova prospettiva:
 
-![mod-view](/res/javaeeview.png)
+![mod-view1](/res/javaeeview.png)
+
+Una volta selezionata la prospettiva corretta, andiamo nella tab dei servers ed installiamo Tomcat.
+
+![mod-view2](/res/serverstab.png)
+
+Se non dovessi vedere la tab server, posso andare in `Window> Show View> Servers`
+
+![mod-view3](/res/editserverstab.png)
