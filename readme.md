@@ -3,6 +3,7 @@
 - [Creazione database](#creazione-database)
 - [Creazione server Tomcat](#creazione-server-tomcat)
   - [Installazione server Tomcat](#installazione-server-tomcat)
+- [Creazione progetto Maven](#creazione-progetto-maven)
 
 ---
 
@@ -125,3 +126,29 @@ Molto semplicemente clicco ok, e ri-eseguo lo _Start_ del server, e di solito mi
 ![mod-view13](/res/ok-startup2.png)
 
 Se visualizzo queste schermate possiamo ritenerci fortunati poichè Tomcat funziona ed è avviato correttamente.
+
+# Creazione progetto Maven
+
+### (?) Che cosa è Maven?
+
+Un progetto Maven è un'applicazione Java organizzata secondo uno schema preciso, gestita tramite Maven.
+
+Maven è un programma (tool) che serve a gestire progetti Java in modo automatico, scaricare librerie/dipendenze da internet e compilare ed impacchettare il codice in .jar o .war.
+
+.jar = Java ARchive  
+Usato per programmi standalone
+
+.war = Web ARchive
+Usato per applicazioni web da caricare su application server.
+
+Maven segue una struttura del genere:
+
+```pgsql
+nome-progetto/
+├── pom.xml           <-- file di configurazione principale
+└── src/
+    └── main/
+        └── java/     <-- qui scrivi il tuo codice Java
+    └── test/
+        └── java/     <-- qui metti i test (se servono)
+```
