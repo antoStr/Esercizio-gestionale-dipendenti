@@ -95,6 +95,12 @@ Infine clicco su _Download and Intstall..._, accetto i termini e condizioni e cl
 
 ![mod-view7](/res/accept-eula.png)
 
+![mod-view8](/res/status-download.png)
+
 Se è andato tutto bene in basso a destra su Eclipse posso vedere di poco il download del server, devo aspettare che termini (in poche parole scompare questo "download" che eclipse sta facendo) e una volta terminato posso cliccare su _Finish_.
 
-![mod-view8](/res/status-download.png)
+Dovrei aver ottenuto una schermata del genere:
+
+![mod-view9](/res/status-servers.png)
+
+Ora proviamo a far partire il server:
