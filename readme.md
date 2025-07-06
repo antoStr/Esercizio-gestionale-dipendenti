@@ -5,6 +5,7 @@
   - [Installazione server](#installazione-server-tomcat)
 - [Creazione progetto Maven](#creazione-progetto-maven)
   - [Inizializzazione progetto](#creazione-progetto)
+  - [Deployment progetto sul server](#deployment-progetto-sul-server)
 
 ---
 
@@ -20,6 +21,8 @@
   - Sito web per la creazione di flowchart e workflow per questo progetto.
 - [BiagioAltruda](https://github.com/BiagioAltruda/JavaCourse/blob/main/Maven%20project%2C%20JDBC%20%26%20Servlet.md)
   - Ho preso spunto dal suo readme riguardo la spiegazione riguardante JDBC, servlet e Maven project.
+- [Oracle](https://www.oracle.com/database/technologies/maven-central-guide.html)
+  - Documentazione utilizzata per Jdbc e Maven.
 - [ChatGPT](https://chatgpt.com/)
   - Compagno AI per studio.
 
@@ -144,10 +147,10 @@ Un progetto Maven è un'applicazione Java organizzata secondo uno schema preciso
 
 Maven è un programma (tool) che serve a gestire progetti Java in modo automatico, scaricare librerie/dipendenze da internet e compilare ed impacchettare il codice in .jar o .war.
 
-.jar = Java ARchive  
+**.jar** = Java ARchive  
 Usato per programmi standalone
 
-.war = Web ARchive
+**.war** = Web ARchive
 Usato per applicazioni web da caricare su application server.
 
 Maven segue una struttura del genere:
@@ -169,3 +172,28 @@ Per il momento è solo per un infarinatura generale per capire e comprendere la 
 ---
 
 ## Inizializzazione progetto Maven
+
+Per creare un nuovo progetto Maven eseguo `File > New > ` e se trovo selezionato _Maven Project_ clicco lì, altrimenti posso andare su `File > New > Other` e cerco `Maven`:
+
+![maven](/res/maven-20init.png)
+
+Una volta creato faccio _Next >_ e spunto _Create a simple project (skip archetype selecion)_:
+
+![maven-2](/res/maven-init2.png)
+
+Dopo, devo inserire il _Group Id_ ed l' _Artifact Id_ dove:  
+**Group Id** = identifica l'azienda o il gruppo che ha creato il progetto.
+
+**Artifact Id** = identifica il nome del progetto
+
+Inoltre, dato che stiamo sviluppando una web application, seleziono il package corretto _war_.
+
+Una volta compilato tutto faccio _Finish_.
+
+![maven-3](/res/maven-init3.png)
+
+Dovremmo aver ottenuto un progetto del genere, dove, come abbiamo visto prima, c'è il nostro _pom.xml_ e la nostra cartella src assieme ad altri files del nostro progetto.
+
+![maven-4](/res/progiettomaiven.png)
+
+## Deployment progetto sul server
