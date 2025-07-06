@@ -104,3 +104,16 @@ Dovrei aver ottenuto una schermata del genere:
 ![mod-view9](/res/status-servers.png)
 
 Ora proviamo a far partire il server:
+
+![mod-view10](/res/startup-server.png)
+
+A me per esempio, tutte le volte che faccio partire il server di Tomcat, costantemente al primo avvio mi da questo errore:
+
+![mod-view11](/res/errors-first-startup.png)
+
+Molto semplicemente clicco ok, e ri-eseguo lo _Start_ del server, e di solito mi funziona sempre, ma a quanto pare è il gatto Tom che gli piace giocare e scherzare.
+
+![mod-view12](/res/ok-startup.png)
+![mod-view13](/res/ok-startup2.png)
+
+Se visualizzo queste schermate possiamo ritenerci fortunati poichè Tomcat funziona ed è avviato correttamente.
