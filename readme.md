@@ -2,17 +2,26 @@
 
 - [Creazione database](#creazione-database)
 - [Creazione server Tomcat](#creazione-server-tomcat)
-  - [Installazione server Tomcat](#installazione-server-tomcat)
+  - [Installazione server](#installazione-server-tomcat)
 - [Creazione progetto Maven](#creazione-progetto-maven)
+  - [Inizializzazione progetto](#creazione-progetto)
 
 ---
 
 ## Risorse utilizzate:
 
 - [Eclipse IDE](https://eclipseide.org/)
+  - Ide per java, completo per lo sviluppo di questo progetto.
 - [Visual Studio Code](https://code.visualstudio.com/)
+  - Editor per lo sviluppo del file del readme, sviluppo frontend per le pagine web in generale.
 - [MySQL Community Edition](https://www.mysql.com/products/community/)
+  - Database relazionale utilizzato per lo sviluppo del database per il progetto.
 - [Flowchart](https://www.lucidchart.com/pages)
+  - Sito web per la creazione di flowchart e workflow per questo progetto.
+- [BiagioAltruda](https://github.com/BiagioAltruda/JavaCourse/blob/main/Maven%20project%2C%20JDBC%20%26%20Servlet.md)
+  - Ho preso spunto dal suo readme riguardo la spiegazione riguardante JDBC, servlet e Maven project.
+- [ChatGPT](https://chatgpt.com/)
+  - Compagno AI per studio.
 
 ---
 
@@ -58,7 +67,7 @@ Tomcat è un tipo di server specializzato in Java (precisamente è un **servlet 
 
 ---
 
-## Installazione Server Tomcat
+## Installazione server
 
 Una volta su eclipse dobbiamo entrare nella prospettiva di Java EE (Java Enterprise Edition, serve per creare applicazioni più robuste per web services):
 
@@ -143,12 +152,20 @@ Usato per applicazioni web da caricare su application server.
 
 Maven segue una struttura del genere:
 
-```pgsql
-nome-progetto/
-├── pom.xml           <-- file di configurazione principale
+```sql
+progetto-maven-example/
+├── pom.xml           <-- File di configurazione principale
 └── src/
     └── main/
-        └── java/     <-- qui scrivi il tuo codice Java
+        └── java/     <-- Codice Java
     └── test/
-        └── java/     <-- qui metti i test (se servono)
+        └── java/     <-- Codice Java per testing etc.
 ```
+
+Il cuore del nostro progetto è `pom.xml` poichè all'interno contiene tutte le istruzioni che il progetto deve seguire come la versione di Java, che librerie deve importare e tanto altro.
+
+Per il momento è solo per un infarinatura generale per capire e comprendere la struttura di Maven.
+
+---
+
+## Inizializzazione progetto Maven
