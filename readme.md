@@ -6,6 +6,7 @@
 - [Creazione progetto Maven](#creazione-progetto-maven)
   - [Inizializzazione progetto](#inizializzazione-progetto-maven)
   - [Deployment progetto sul server](#deployment-progetto-sul-server)
+  - [Installazione dipendenze](#installazione-dipendenze)
 
 ---
 
@@ -23,10 +24,16 @@
   - Ho preso spunto dal suo readme riguardo la spiegazione riguardante JDBC, servlet e Maven project.
 - [Oracle](https://www.oracle.com/database/technologies/maven-central-guide.html)
   - Documentazione utilizzata per Jdbc e Maven.
+- [Maven Central Repository](https://central.sonatype.com/)
+  - Sito per la ricerca delle dipendenze per Maven.
 - [ChatGPT](https://chatgpt.com/)
   - Compagno AI per studio.
 
 ---
+
+# Traccia e flow dell'esercizio
+
+![esercizio](/res/flowchart.png)
 
 # Creazione database
 
@@ -196,4 +203,78 @@ Dovremmo aver ottenuto un progetto del genere, dove, come abbiamo visto prima, c
 
 ![maven-4](/res/progiettomaiven.png)
 
+---
+
 ## Deployment progetto sul server
+
+### (?) Che significa fare il deployment?
+
+Fare il deployment del nostro progetto sul server significa rendere il nostro progetto pronto all'uso su un server, o detto in parole povere carichiamo il nostro progetto sul server, dove il server lo esegue e ce lo rende accessibile per esempio via browser.
+
+Per deployare il nostro progetto faccio tasto destro sul server che abbiamo creato [qui](#installazione-server), e faccio _Add and Remove..._ :
+
+![maven-41](/res/addnremove.png)
+
+Nella schermata che mi si presenta mi mostra i progetti disponibili al deployment (a sinistra) ed i progetti deployati (a destra).
+
+Clicchiamo sul nostro progetto e facciamo _Add >_ :
+
+![maven-412](/res/addnremove2.png)
+
+Infine faccio finish. Abbiamo deployato il nostro progetto sul nostro server Tomcat. Ora installiamo le dipendenze necessarie per il progetto. Avremo bisogno sicuramente di un qualcosa che colleghi il nostro Eclipse o perlomeno il nostro progetto al nostro database.
+
+---
+
+## Installazione dipendenze
+
+Spostiamoci su _pom.xml_, apriamo il file e dovremmo avere un file del genere:
+
+![pom](/res/pom.png)
+
+Per qualche motivo ho un errore genera il file, elimino le righe dopo il primo link in project e mi assicuro che rispecchi una struttura del genere:
+
+![pom2](/res/pom2.png)
+
+Ora inseriamo le dipendenze, in questo blocco di codice puoi trovare quelle di jakarta servlet e di mysql, se hai bisogno di qualsiasi dipendenza che vuoi includere puoi andare sul sito di [Maven Central Repository](https://central.sonatype.com/) dove puoi trovare nella barra di ricerca le dipendenza che vuoi.
+
+Inseriamo queste dipendenze dopo il packaging.
+
+```xml
+<dependencies>
+	<dependency>
+		<groupId>jakarta.servlet</groupId>
+		<artifactId>jakarta.servlet-api</artifactId>
+		<version>6.0.0</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>8.0.33</version>
+	</dependency>
+</dependencies>
+```
+
+Dovremmo aver raggiunto una struttura simile:
+
+![pom3](/res/pom3.png)
+
+Inoltre abbiamo bisogno di un file che a volte non viene generato ma possiamo farlo fortunatamente anche dopo, il file in questione è _web.xml_, questo file ci aiuta a configurare servlet, definire url mapping e tanto altro, in poche parole dice al nostro server Tomcat come gestire la nostra web app.
+
+![webxml](/res/webxml.png)
+
+Per generarlo posso seguire queste istruzioni:
+
+Tasto destro sul nostro progetto e faccio `Java EE Tools > Generate Deployment Descriptor Stub`.
+
+Per aprire il nostro file _web.xml_ mi assicuro che sia nella tab source in basso quando lo apro e che abbia una struttura simile a questa.
+
+Se ci sono tag servlet e servlet mapping posso cancellarli.
+
+Dovremmo controllare regolarmente questo file per assicurarci che Maven importi le nostre servlet e le aggiunga al nostro file di configurazione.
+
+![webxml](/res/webxml2.png)
+
+Per installare le dependencies aggiunte faccio tasto destro su _pom.xml_ ed eseguo `Run As > 5 Maven Install`
+
+![maveninst](/res/maveninstall.png)
