@@ -275,6 +275,17 @@ Dovremmo controllare regolarmente questo file per assicurarci che Maven importi 
 
 ![webxml](/res/webxml2.png)
 
-Per installare le dependencies aggiunte faccio tasto destro su _pom.xml_ ed eseguo `Run As > 5 Maven Install`
+Per installare le dependencies aggiunte faccio tasto destro su _pom.xml_ ed eseguo `Run As > 5 Maven Install`:
 
 ![maveninst](/res/maveninstall.png)
+
+Se è andato tutto liscio dovrei avere un output in console del genere:
+
+![mavenok](/res/mavenoutok.png)
+
+Io ho avuto un problema ed è importante leggere la console in quanto l'applicazione di Maven utilizzava una versione più recente di quella installata su Eclipse e nel mio computer e non me la buildava. (Avevo Java 8 o da cmd con `java -version` _java version "1.8.0_451"_) Quando avevo installato java avevo installato la versione stabile e comune dal sito ed ero convinto che fosse l'ultima installata quando in realtà non era così, l'ho aggiornata da [qui](https://dev.java/download/) scaricando l'ultima disponibile.
+
+Su Eclipse ho modificato la jdk da `Window > Preferences > Java > Installed JREs` ed ho selezionato l'ultima scaricata (nel mio caso la jdk-24).
+
+Il progetto va ugualmente aggiornato e per cambiare la versione di java con cui viene buildato devo fare tasto destro sul progetto e seguo `Build Path > Configure Build Path...`.  
+Seleziono la JRE vecchia o che voglio sostituire, la rimuovo con _Remove_ a destra ed aggiungo la nuova JRE con `Add Library > JRE System Library` ed ho settato con _Workspace default JRE_ che nel mio caso avendola aggiornata prima mi dice _(jdk-24)_ ed infine faccio finish. Alla fine ho risolto ed ho buildato correttamente il mio progetto.
