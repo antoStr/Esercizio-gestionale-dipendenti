@@ -4,7 +4,7 @@
 - [Creazione server Tomcat](#creazione-server-tomcat)
   - [Installazione server](#installazione-server-tomcat)
 - [Creazione progetto Maven](#creazione-progetto-maven)
-  - [Inizializzazione progetto](#creazione-progetto)
+  - [Inizializzazione progetto](#inizializzazione-progetto-maven)
   - [Deployment progetto sul server](#deployment-progetto-sul-server)
 
 ---
