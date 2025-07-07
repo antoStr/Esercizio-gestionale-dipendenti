@@ -46,7 +46,7 @@ In futuro potremmo implementare funzioni e stored procedures.
 
 ```sql
 create table dipendenti (
-	id int not null auto_increment primary key,
+  id int not null auto_increment primary key,
   nome varChar(50) not null,
   cognome varChar(50) not null,
   codice_fiscale varChar(16) not null unique,
