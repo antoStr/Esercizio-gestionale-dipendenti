@@ -7,6 +7,7 @@
   - [Inizializzazione progetto](#inizializzazione-progetto-maven)
   - [Deployment progetto sul server](#deployment-progetto-sul-server)
   - [Installazione dipendenze](#installazione-dipendenze)
+  - [Creazione servlet](#creazione-servlet)
 
 ---
 
@@ -283,9 +284,28 @@ Se è andato tutto liscio dovrei avere un output in console del genere:
 
 ![mavenok](/res/mavenoutok.png)
 
-Io ho avuto un problema ed è importante leggere la console in quanto l'applicazione di Maven utilizzava una versione più recente di quella installata su Eclipse e nel mio computer e non me la buildava. (Avevo Java 8 o da cmd con `java -version` _java version "1.8.0_451"_) Quando avevo installato java avevo installato la versione stabile e comune dal sito ed ero convinto che fosse l'ultima installata quando in realtà non era così, l'ho aggiornata da [qui](https://dev.java/download/) scaricando l'ultima disponibile.
+Io ho avuto un problema ed è importante leggere la console in quanto l'applicazione di Maven utilizzava una versione più recente di quella installata su Eclipse e nel mio computer e non me la buildava. (Avevo Java 8 o da cmd con `java -version` _java version "1.8.0_451"_) Quando avevo installato java avevo installato la versione stabile e comune dal sito ed ero convinto che fosse l'ultima installata quando in realtà non era così, l'ho aggiornata da [qui](https://dev.java/download/) scaricando l'ultima disponibile. Una volta scaricat ed installato la nuova versione l'ha aggiornata all'ultima automaticamente facendo `java -version` (_java version "24.0.1" 2025-04-15_)
 
 Su Eclipse ho modificato la jdk da `Window > Preferences > Java > Installed JREs` ed ho selezionato l'ultima scaricata (nel mio caso la jdk-24).
 
 Il progetto va ugualmente aggiornato e per cambiare la versione di java con cui viene buildato devo fare tasto destro sul progetto e seguo `Build Path > Configure Build Path...`.  
 Seleziono la JRE vecchia o che voglio sostituire, la rimuovo con _Remove_ a destra ed aggiungo la nuova JRE con `Add Library > JRE System Library` ed ho settato con _Workspace default JRE_ che nel mio caso avendola aggiornata prima mi dice _(jdk-24)_ ed infine faccio finish. Alla fine ho risolto ed ho buildato correttamente il mio progetto.
+
+## Creazione servlet
+
+Per testare se il nostro progetto funziona come dovrebbe e prima di incominciare a creare i nostri package per incominciare il nostro esercizio creiamo una servlet.
+
+### (?) Che cosa è una servlet?
+
+Una servlet è una classe in Java che interagisce col browser. E' come un intermediario fra il browser ed il nostro codice, quindi agisce come il nostro vecchio main in Java, solamente che adesso si chiama servlet e viene attivata dal nostro server perchè appunto esegue richieste dal browser.
+
+---
+
+Faccio tasto destro sul progetto e faccio: `New > Servlet`.
+Inserisco un package (in questo package _com_ vuol dire un package generico, com si usa appunto come _test_, _prova_) ed un nome della servlet, o perlomeno il nome della servlet che gestirà quaclosa del nostro progetto, in questo caso la lascio neutra come TestSvt (testServlet).
+
+E' importante ricordare che una servlet agirà solo su una tabella del nostro database, se ho un altra tabella che devo gestire, per esempio ho una tabella dipendenti ed una tabella con amministratori, dovrò creare due servlet diverse dove una si occuperà della tabella dipendenti ed un'altra andrà ad operare sulla tabella amministratori.
+
+Una volta inseriti i dati clicco su _Finish_.
+
+![svtwiz](/res/svtwizard.png)
