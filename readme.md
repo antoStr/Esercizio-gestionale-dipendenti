@@ -309,3 +309,21 @@ E' importante ricordare che una servlet agirà solo su una tabella del nostro da
 Una volta inseriti i dati clicco su _Finish_.
 
 ![svtwiz](/res/svtwizard.png)
+
+Una volta creata la nostra servlet la apriamo e dovremmo avere una struttura di questo tipo:
+
+![wizbelike](/res/svtbelike.png)
+
+Ho sostituito riga 30 con un:
+
+```java
+System.out.println("Hello!");
+```
+
+Ed infine ho salvato la servlet.
+
+A volte può capitare che dia errore il server e dobbiamo andare a eliminare in _web.xml_ qualsiasi tag **servlet** e **servlet mapping** e poi runnare il server.
+
+Per testare il funzionamento della nostra servlet dobbiamo prima di tutto startare il server, ed una volta fatto accedere dal browser al nostro progetto che nel mio caso è: `http://localhost:8080/gestioneDipendenti/TestSrv`, se visualizzo un qualcosa come `Served at: /gestioneDipendenti` e nella console di Eclipse visualizzo il system out allora la nostra servlet è stata eseguita correttamente e possiamo procedere con il nostro esercizio.
+
+![alt text](/res/svthello.png)
