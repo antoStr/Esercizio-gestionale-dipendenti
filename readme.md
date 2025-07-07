@@ -47,19 +47,19 @@ In futuro potremmo implementare funzioni e stored procedures.
 ```sql
 create table dipendenti (
 	id int not null auto_increment primary key,
-    nome varChar(50) not null,
-    cognome varChar(50) not null,
-    codice_fiscale varChar(16) not null unique,
-    data_nascita date not null,
-    luogo_nascita varChar(50) not null,
-    email varChar(100) not null unique,
-    telefono int not null unique,
-    indirizzo varChar(200) not null,
-    data_assunzione date not null,
-    ruolo varChar(75) not null,
-    reparto varChar(75) not null,
-    stipendio int not null,
-    attivo boolean not null
+  nome varChar(50) not null,
+  cognome varChar(50) not null,
+  codice_fiscale varChar(16) not null unique,
+  data_nascita date not null,
+  luogo_nascita varChar(50) not null,
+  email varChar(100) not null unique,
+  telefono int not null unique,
+  indirizzo varChar(200) not null,
+  data_assunzione date not null,
+  ruolo varChar(75) not null,
+  reparto varChar(75) not null,
+  stipendio int not null,
+  attivo boolean not null
 );
 
 ```
@@ -314,7 +314,7 @@ Una volta creata la nostra servlet la apriamo e dovremmo avere una struttura di 
 
 ![wizbelike](/res/svtbelike.png)
 
-Ho sostituito riga 30 con un:
+Ho sostituito riga 30 (commento autogenerato) con un:
 
 ```java
 System.out.println("Hello!");
