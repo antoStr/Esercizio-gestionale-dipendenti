@@ -53,7 +53,7 @@ create table dipendenti (
   data_nascita date not null,
   luogo_nascita varChar(50) not null,
   email varChar(100) not null unique,
-  telefono int not null unique,
+  tel int not null unique,
   indirizzo varChar(200) not null,
   data_assunzione date not null,
   ruolo varChar(75) not null,
