@@ -8,6 +8,14 @@
   - [Deployment progetto sul server](#deployment-progetto-sul-server)
   - [Installazione dipendenze](#installazione-dipendenze)
   - [Creazione servlet](#creazione-servlet)
+- [Strutturazione esercizio](#strutturazione-esercizio)
+  - [Packages e classi](#packages-e-classi)
+    - [Package model](#package-model)
+      - [Classe Dipendente](#classe-dipendente)
+    - [Package dao](#package-dao)
+      - [Classe DatabaseConnection](#classe-databaseconnection)
+      - [Interfaccia DipendenteDAO](#interfaccia-dipenentedao)
+      - [Classe DipendenteDAOImpl](#classe-dipendentedaoimpl)
 
 ---
 
@@ -597,7 +605,32 @@ public void aggiorna(Dipendente d) {
 La condizione invece _righeAggiornate_ mi serve per capire se la quary ha modificato delle righe nella tabella, quindi se le righe aggiornate sono positive significa che ha modificato delle righe e quindi un dipendente esiste, al contrario se non esiste non aggiornerà nessuna riga e mi dirà che il dipendente non esiste. E' una condizione che verrà utilizzata anche in altri metodi ed è molto utile.
 
 **Metodo elimina:**
-Il metodo elimina utilizza le stesse risorse dei metodi precedenti, cambia solamente che è più semplice da scrivere in quanto se esiste un id nella mia tabella Dipendenti di un dipendente, me lo andrà a
+Il metodo elimina utilizza le stesse risorse dei metodi precedenti, cambia solamente che è più semplice da scrivere in quanto se esiste un id nella mia tabella Dipendenti di un dipendente, me lo andrà ad eliminare.
+
+Utilizzo il metodo delle righe aggiornate per controllare se il dipendente è stato eliminato o meno.
+
+```java
+public void elimina(int i) {
+		String querySql = "DELETE FROM dipendenti WHERE id = ?";
+
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(querySql)){
+
+			pstmt.setInt(1, i);
+
+			int righeAggiornate = pstmt.executeUpdate();
+
+	        if (righeAggiornate > 0) {
+	            System.out.println("Dipendente aggiornato con successo!");
+	        } else {
+	            System.out.println("Nessun dipendente trovato con quell'ID.");
+	        }
+
+		} catch (SQLException e) {
+			System.err.println("Errore durante l'eliminazione del dipendente.");
+		}
+
+}
+```
 
 **Metodo cercaPerID:**
 Il metodo cercaPerID utilizza le stesse risorse utilizzate precedentemente ma con l'aggiunta del ResultSet, è un interfaccia di java che rappresenta il risultato di una query SQL di tipo _SELECT_. E' essenzialmente un cursore che punta alle righe restituite dalla query e permette di navigare attraverso i dati.
@@ -645,3 +678,46 @@ public Dipendente cercaPerID(int id) {
 Una volta accertato che l'input esiste lui mi creerà l'oggetto dipendente da restituire e me lo mostra in console altrimenti mi darà un errore nel catch che gestirà entrambi i try with resources.
 
 LocalDate è un tipo di dato che mi restituisce una data che però non è compresa nel set di metodi del ResultSet, quidni per ovviare a questo problema faccio un cast con .toLocalDate().
+
+**Metodo getAllDipendenti:**
+
+Il metodo getAllDipendenti svolgerà le stesse mansioni del metodo cercaPerID, l'unico cambiamento è ci restituirà un'arraylist di dipendenti. Come prima uso il rs.next() per muovermi alla prossima riga disponibile, raccolgo dati da inserire nella query, assemblo l'oggetto dipendente e lo inserisco nell'arraylist che verrà mostrato alla fine.  
+Prima ho utilizzato un if poichè stavo cercando un solo dipendente per id, qui ho bisogno di mostrarne un numero che è maggiore di uno quindi uso un while che mi mostrerà più risultati, nella quary ho un _select _ from dipendenti\* quidni il while mi ciclerà tutta la nostra tabella.
+
+```java
+public List<Dipendente> getAllDipendenti() {
+		String querySql = "SELECT * FROM dipendenti";
+		List<Dipendente> listaDipendenti = new ArrayList<>();
+		Dipendente d = new Dipendente();
+
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(querySql)){
+
+			try(ResultSet rs = pstmt.executeQuery()){
+				while ( rs.next()) {
+					int idDipendente = rs.getInt("id");
+					String nomeDipendente = rs.getString("nome");
+					String cognomeDipendente = rs.getString("cognome");
+					String codiceFiscale = rs.getString("codice_fiscale");
+					LocalDate dataNascita = rs.getDate("data_nascita").toLocalDate();
+					String luogoNascita = rs.getString("luogo_nascita");
+					String emailDipendente = rs.getNString("email");
+					String telDipendente = rs.getString("tel");
+					String indirizzo = rs.getNString("indirizzo");
+					LocalDate dataAssunzione = rs.getDate("data_assunzione").toLocalDate();
+					String reparto = rs.getNString("reparto");
+					String ruolo = rs.getString("ruolo");
+					int stipendio = rs.getInt("stipendio");
+					boolean attivo = rs.getBoolean("attivo");
+
+					d = new Dipendente (idDipendente, nomeDipendente, cognomeDipendente, codiceFiscale, dataNascita, luogoNascita, emailDipendente, telDipendente, indirizzo, dataAssunzione, reparto, ruolo, stipendio, attivo);
+					listaDipendenti.add(d);
+				}
+			}
+		} catch (Exception e) {
+			System.err.println("Errore nell'output dei dipendenti.");
+		}
+
+		System.out.println(listaDipendenti);
+		return listaDipendenti;
+}
+```
