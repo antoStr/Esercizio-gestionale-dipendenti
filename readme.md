@@ -16,6 +16,18 @@
       - [Classe DatabaseConnection](#classe-databaseconnection)
       - [Interfaccia DipendenteDAO](#interfaccia-dipenentedao)
       - [Classe DipendenteDAOImpl](#classe-dipendentedaoimpl)
+    - [Package controller](#package-controller)
+      - [Servlet DipendentiServlet](#servlet-dipendentiservlet)
+  - [Html, css, form ed input](#html-css-form-ed-input)
+    - [Html, form ed input](#html-form-ed-input)
+      - [Pagina principale](#pagina-principale)
+      - [Pagina aggiunta di un dipendente](#pagina-di-aggiunta-dipendente)
+      - [Pagina modifica di un dipendente](#pagina-di-modifica-del-dipendente)
+      - [Pagina rimozione di un dipendente](#pagina-di-rimozione-di-un-dipendente)
+      - [Pagina ricerca di un dipendente](#pagina-di-ricerca-di-un-dipendente)
+      - [Pagina ricerca dipendenti](#pagina-di-ricerca-dipendenti)
+      - [Pagina di return](#pagina-di-return)
+    - [Css](#css)
 
 ---
 
@@ -37,6 +49,8 @@
   - Sito per la ricerca delle dipendenze per Maven.
 - [ChatGPT](https://chatgpt.com/)
   - Compagno AI per studio.
+- [Claude](https://claude.ai/)
+  - Compagno AI per studio e revisione codice.
 
 ---
 
@@ -382,7 +396,7 @@ Il workflow dell'esercizio seguirà questa linea:
 Accederemo al nostro gestionale tramite una pagina html dal nostro server dove ci saranno diverse pagine collegate alla pagina principale in base all'operazione da svolgere.  
 Una volta selezionata la pagina la servlet svolgerà l'operazione richiesta e verremo reindirizzati ad una pagina che ci dice se vogliamo fare altro con sotto un link per ritornare alla pagina principale.
 
-## Packages e classi
+## Packages, classi e servlet
 
 Per incominciare abbiamo bisogno di creare i nostri package per tenere ordinato il nostro esercizio ed abbiamo bisogno di tre package principali:
 
@@ -719,5 +733,594 @@ public List<Dipendente> getAllDipendenti() {
 
 		System.out.println(listaDipendenti);
 		return listaDipendenti;
+}
+```
+
+---
+
+### Package controller
+
+Il package controller è il package che conterrà le servlet che gestiranno gli input e richieste http.
+
+Sarà principalmente composto da una sola servlet che gestirà gli input dai form ed invocherà i metodi che abbiamo sviluppato in DipendenteDAOImpl importando tutto il necessario che sarà il model dell'impiegato ed il dao che invocherà i metodi creando un istanza del dao nel metodo.
+
+Dobbiamo vedere il dao come una cassetta degli attrezzi e richiamarla quando abbiamo bisogno di un metodo, quando abbiamo bisogno di un metodo sviluppato prima, creo un istanza del dao e poi sfrutto il dato sull'oggetto a cui vogliamo svoglere delle operazioni.
+
+Esempio:
+
+```java
+//Ho un oggetto con meno parametri ma è solo per l'esempio
+
+//Ho un oggetto dipendente con dei valori
+Dipendente d = new Dipendente("Luca", "Bianchi");
+
+//Istanzio un dao per svoglere operazioni con il mio dipendente, in questo caso ho bisogno di aggiungerlo nel database e quindi faccio inserisci.
+DipendenteDaoImpl dao = new DipendenteDaoImpl();
+dao.inserisci(d);
+
+//Il metodo inserisci come visto prima si connette al database e svolge l'operazione di aggiunta al database nello specifico nella tabella dipendenti.
+
+/
+```
+
+#### Servlet DipendentiServlet
+
+Nella sezione [servlet](#creazione-servlet) c'è la spiegazione di tutti i metodi che implementa la servlet di base, nello specifico e per praticità faremo le operazioni di ricerca nel _doGet()_ e le operazioni di aggiunta, modifica ed eliminazione nel _doPost()_.
+
+Nei metodi richiamo il metodo _getParameter()_ che prenderà dei valori non necessariamente identici a quelli che ho sul database (a livello di nome del nome ahah, _request.getParameter("nome")_ =! da nome che ho sul db, è solo un nome placeholder), questi valori andremo poi a riutilizzarli nel form dell'html per collegare i valori ai vari input differenti.
+
+Inoltre il metodo _request.getParameter()_ di default ci ritornerà tutto in stringa, dovremmo noi man mano andare a castare le variabili che vogliamo nel tipo che vogliamo.
+
+Nel mio _doGet()_ e _doPost_ istanzio due nuove request che avranno un valore di default che sarà cambiato in uno switch per differenziare l'utilizzo del metodo e servlet differente. Questo metodo mi sarà utile più avanti nel form.
+
+_doGet():_
+
+```java
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String action = request.getParameter("action");
+
+		if (action == null) {
+			action = "showAll";
+		}
+
+		switch (action) {
+		case "findId":
+			cercaDipendente(request, response);
+			break;
+		case "showAll":
+			mostraDipendenti(request, response);
+			break;
+		default:
+			response.sendError(400, "Azione non valida");
+			break;
+		}
+}
+```
+
+_doPost():_
+
+```java
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String action = request.getParameter("action");
+
+		if (action == null) {
+			action = "insert";
+		}
+
+		switch (action) {
+		case "insert":
+			inserisciDipendente(request, response);
+			break;
+		case "remove":
+			rimuoviDipendente(request, response);
+			break;
+		case "update":
+			modificaDipendente(request, response);
+			break;
+		default:
+			response.sendError(400, "Azione non valida");
+			break;
+		}
+}
+```
+
+Nota:
+Una roba che devo migliorare sicuramente nel codice è la gestione dell'errore nell'input, ma siccome volevo documentare l'esercizio e scrivere pian piano una guida che potesse rendermi utile cercherò di farlo appena posso e di migliorare tutto.
+
+**Metodo inserisciDipendente:**
+
+```java
+private void inserisciDipendente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String nome = request.getParameter("nome");
+		String cognome = request.getParameter("cognome");
+		String codiceFiscale = request.getParameter("codice_fiscale");
+
+		String dataDiNascitaStr = request.getParameter("data_nascita");
+		LocalDate dataDiNascita = LocalDate.parse(dataDiNascitaStr);
+
+		String luogoNascita = request.getParameter("luogo_nascita");
+		String email = request.getParameter("email");
+		String numeroTel = request.getParameter("tel");
+		String indirizzo = request.getParameter("indirizzo");
+
+		String dataAssunzioneStr = request.getParameter("data_assunzione");
+		LocalDate dataAssunzione = LocalDate.parse(dataAssunzioneStr);
+
+		String ruolo = request.getParameter("ruolo");
+		String reparto = request.getParameter("reparto");
+
+		String stipendioStr = request.getParameter("stipendio");
+		int stipendio = Integer.parseInt(stipendioStr);
+
+		String attivoStr = request.getParameter("attivo");
+		boolean attivo = Boolean.parseBoolean(attivoStr);
+
+		Dipendente d = new Dipendente(nome, cognome, codiceFiscale, dataDiNascita, luogoNascita, email, numeroTel, indirizzo, dataAssunzione, ruolo, reparto, stipendio, attivo);
+
+		DipendenteDaoImpl dao = new DipendenteDaoImpl();
+		dao.inserisci(d);
+
+		response.sendRedirect("ReturnPage.html");
+
+}
+```
+
+Nel metodo vado a settare ogni stringa con un valore che verrà usato nel form come spiegato prima, dopo istanzio un nuovo oggetto dipendente che utilizzerà le variabili raccolte, infine istanzio un dao per richiamare il metodo inserisci per inserire il dipendente creato nel database.
+
+Una volta terminata l'operazione lui mi rimanda ad una pagina di return che se vorrà continuare a fare altre operazioni dovrà ritornare alla pagina principale con un link nella pagina.
+
+**Metodo rimuoviDipendente:**
+
+```java
+private void rimuoviDipendente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String idDipendenteStr = request.getParameter("id");
+		int idDipendente = Integer.parseInt(idDipendenteStr);
+
+		DipendenteDaoImpl dao = new DipendenteDaoImpl();
+		dao.elimina(idDipendente);
+
+		response.sendRedirect("ReturnPage.html");
+}
+```
+
+Stessa cosa di prima (i metodi saranno più o meno tutti uguali), raccolgo dati ed uso il dao per fare operazioni, in questo caso di elimina tramite id che sarà raccolto nel form nell'html.
+
+**Metodo modificaDipendente:**
+
+E' più o meno un copia ed incolla del metodo inserisciDipendente l'unica cosa diversa è che qui usiamo un id per controllare se il dipendente esiste nella tabella del database, richiamo il dao ed aggiorno.
+
+```java
+private void modificaDipendente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String idStr = request.getParameter("id");
+		int id = Integer.parseInt(idStr);
+
+		String nome = request.getParameter("nome");
+		String cognome = request.getParameter("cognome");
+		String codiceFiscale = request.getParameter("codice_fiscale");
+
+		String dataNascitaStr = request.getParameter("data_nascita");
+		LocalDate dataNascita = LocalDate.parse(dataNascitaStr);
+
+		String luogoNascita = request.getParameter("luogo_nascita");
+		String email = request.getParameter("email");
+
+		String tel = request.getParameter("tel");
+		String indirizzo = request.getParameter("indirizzo");
+
+		String dataAssunzioneStr = request.getParameter("data_assunzione");
+		LocalDate dataAssunzione = LocalDate.parse(dataAssunzioneStr);
+
+		String ruolo = request.getParameter("ruolo");
+		String reparto = request.getParameter("reparto");
+
+		String stipendioStr = request.getParameter("stipendio");
+		int stipendio = Integer.parseInt(stipendioStr);
+
+		String attivoStr = request.getParameter("attivo");
+		boolean attivo = Boolean.parseBoolean(attivoStr);
+
+		Dipendente d = new Dipendente(id, nome, cognome, codiceFiscale, dataNascita, luogoNascita, email, tel, indirizzo, dataAssunzione, ruolo, reparto, stipendio, attivo);
+
+		DipendenteDaoImpl dao = new DipendenteDaoImpl();
+		dao.aggiorna(d);
+
+		response.sendRedirect("ReturnPage.html");
+
+}
+```
+
+**Metodo cercaDipendente:**
+
+Il metodo cercaDipendente fa come al solito stesse cose di prima dove però, come il metodo elimina, ha solo bisogno di un valore per poter fare operazioni.
+
+```java
+private void cercaDipendente(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String idStr = request.getParameter("id");
+		int id = Integer.parseInt(idStr);
+
+		DipendenteDaoImpl dao = new DipendenteDaoImpl();
+		dao.cercaPerID(id);
+
+		response.sendRedirect("ReturnPage.html");
+
+	}
+```
+
+**Metodo mostraDipendenti:**
+
+E' il metodo più snello di tutti il quale non ha bisogno di nessun parametro dove semplicemente istanzia il dao per l'operazione di _getAllDipendenti()_.
+
+```java
+private void mostraDipendenti(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		DipendenteDaoImpl dao = new DipendenteDaoImpl();
+		dao.getAllDipendenti();
+
+		response.sendRedirect("ReturnPage.html");
+	}
+```
+
+---
+
+## Html, Css, Form ed Input
+
+### Html, form ed input
+
+#### Pagina Principale
+
+Abbiamo introdotto nella sezione [strutturazione eserizio](#strutturazione-esercizio) che accederemo al nostro server tramite link alla pagina html di default del nostro gestionale, quindi incominciamo a creare una semplice pagina html facendo tasto destro sul nostro progetto e seguendo `New > HTML File`. Aggiungiamo anche diversi collegamenti a pagine che creeremo più avanti in base alle operazioni che faremo:
+
+```html
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="MainPage.css" />
+    <title>Gestionale</title>
+  </head>
+  <body>
+    <div class="titolo">
+      <h1>Benvenuto nel gestionale dipendenti.</h1>
+      <h2>Scegli la tua operazione:</h2>
+    </div>
+    <div class="container">
+      <div class="menu">
+        <a href="AggiuntaDipendente.html">Aggiungi un dipendente</a>
+        <a href="RimuoviDipendente.html">Rimuovi un dipendente</a>
+        <a href="ModificaDipendente.html">Modifica un dipendente</a>
+        <a href="CercaDipendente.html">Mostra un dipendente tramite id</a>
+        <a href="MostraDipendenti.html">Mostra tutti i dipendenti</a>
+      </div>
+    </div>
+  </body>
+</html>
+```
+
+Posso accedere alla pagina avviando il server di Tomcat e ricercare l'indirizzo nel browser:
+
+```
+http://localhost:8080/gestioneDipendenti/MainPage.html
+```
+
+Posso linkare diverse pagine creandole come prima ed aggiungendole correttamente nell'href prestando attenzione alla directory di creazione (in questo caso io le ho lasciate tutte in un unica cartella assieme ai files di css ma una buona pratica è dividere i files html da quelli css come in questo caso in diverse cartelle, per comodità lasciamo tutto così com'è).
+
+#### Pagina di aggiunta dipendente
+
+La pagina di aggiunta dipendente dovrà contenre un form che prenderà come action l'action della nostra servlet spiegata [qui](#package-controller) dove grazie a questo parametro potremmo andare a differenziare la nostra servlet, quindi in base a quello che farà il form cambierà anche l'action, in questo caso è un form di inserimento quindi avrà insert come valore.
+
+Il form è un grande campo dove verranno associati dei valori di input al suo interno dove quest'ultimi raccoglieranno input dell'utente.
+
+Gli input riceveranno come _name_, i parametri passati nel _request.getParameter()_ in modo tale da collegarli e renderli funzionali, i campi di _type_ cambiano in base alla richiesta di input che voglio dare all'utente, quindi se voglio raccogliere un campo di testo uso _text_, se voglio raccogliere una data metterò _date_ e via dicendo.
+
+Alla fine di un form per far raccogliere tutti i dati utilizzo un input di tipo _submit_ che raccoglierà appunto tutti i dati che verranno elaborati dalla servlet.
+
+```html
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="AggiuntaDipendente.css" />
+    <title>Aggiunta dipendente</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Inserimento nuovo dipendente</h1>
+      <form
+        action="DipendentiServlet?action=insert"
+        class="form-wrapper"
+        method="post"
+      >
+        <div>
+          <span>Nome:</span>
+          <input type="text" name="nome" required />
+        </div>
+        <div>
+          <span>Cognome:</span>
+          <input type="text" name="cognome" required />
+        </div>
+        <div>
+          <span>Codice fiscale:</span>
+          <input type="text" name="codice_fiscale" required />
+        </div>
+        <div>
+          <span>Data di nascita:</span>
+          <input type="date" name="data_nascita" required />
+        </div>
+        <div>
+          <span>Luogo di nascita:</span>
+          <input type="text" name="luogo_nascita" required />
+        </div>
+        <div>
+          <span>Email:</span>
+          <input type="email" name="email" required />
+        </div>
+        <div>
+          <span>Numero di telefono:</span>
+          <input type="text" name="tel" required />
+        </div>
+        <div>
+          <span>Indirizzo:</span>
+          <input type="text" name="indirizzo" required />
+        </div>
+        <div>
+          <span>Data assunzione:</span>
+          <input type="date" name="data_assunzione" required />
+        </div>
+        <div>
+          <span>Ruolo:</span>
+          <input type="text" name="ruolo" required />
+        </div>
+        <div>
+          <span>Reparto:</span>
+          <input type="text" name="reparto" required />
+        </div>
+        <div>
+          <span>Stipendio:</span>
+          <input type="number" name="stipendio" required />
+        </div>
+        <div>
+          <span>Attività attuale:</span>
+          <select name="attivo" id="">
+            <option value="true">Attivo</option>
+            <option value="false">Non attivo</option>
+          </select>
+        </div>
+        <div>
+          <input type="submit" />
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
+```
+
+#### Pagina di modifica del dipendente
+
+Le pagine sono più o meno le stesse e seguono la stessa logica spiegata nella pagina di aggiunta dipendente con form, l'unica cosa che cambierà sarà appunto l'action all'interno del form ed il metodo utilizzato nel form a seconda di come l'ho implementato nella servlet, se il metodo l'ho messo nel _doGet()_ allora il form avrà un metodo _get_ altrimenti varia a seconda del metodo dove ho istanziato i miei metodi.
+
+```html
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="AggiuntaDipendente.css" />
+    <title>Modifica dipendente</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Modifica dipendente esistente</h1>
+      <form
+        action="DipendentiServlet?action=update"
+        class="form-wrapper"
+        method="post"
+      >
+        <div>
+          <span>Id:</span>
+          <input type="number" name="id" required />
+        </div>
+        <div>
+          <span>Nome:</span>
+          <input type="text" name="nome" required />
+        </div>
+        <div>
+          <span>Cognome:</span>
+          <input type="text" name="cognome" required />
+        </div>
+        <div>
+          <span>Codice fiscale:</span>
+          <input type="text" name="codice_fiscale" required />
+        </div>
+        <div>
+          <span>Data di nascita:</span>
+          <input type="date" name="data_nascita" required />
+        </div>
+        <div>
+          <span>Luogo di nascita:</span>
+          <input type="text" name="luogo_nascita" required />
+        </div>
+        <div>
+          <span>Email:</span>
+          <input type="email" name="email" required />
+        </div>
+        <div>
+          <span>Numero di telefono:</span>
+          <input type="text" name="tel" required />
+        </div>
+        <div>
+          <span>Indirizzo:</span>
+          <input type="text" name="indirizzo" required />
+        </div>
+        <div>
+          <span>Data assunzione:</span>
+          <input type="date" name="data_assunzione" required />
+        </div>
+        <div>
+          <span>Ruolo:</span>
+          <input type="text" name="ruolo" required />
+        </div>
+        <div>
+          <span>Reparto:</span>
+          <input type="text" name="reparto" required />
+        </div>
+        <div>
+          <span>Stipendio:</span>
+          <input type="number" name="stipendio" required />
+        </div>
+        <div>
+          <span>Attività attuale:</span>
+          <select name="attivo" id="">
+            <option value="true">Attivo</option>
+            <option value="false">Non attivo</option>
+          </select>
+        </div>
+        <div>
+          <input type="submit" />
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
+```
+
+#### Pagina di rimozione di un dipendente
+
+```html
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rimuovi dipendente</title>
+    <link rel="stylesheet" href="RimuoviDipendente.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Rimozione di un dipendente</h1>
+      <form action="DipendentiServlet?action=remove" method="post">
+        <span>Inserisci id dipendente da rimuovere:</span>
+        <input type="number" name="id" required />
+        <input type="submit" />
+      </form>
+    </div>
+  </body>
+</html>
+```
+
+#### Pagina di ricerca di un dipendente
+
+Non avendo fatto Javascript o altre tecnologie più avanzate dovremmo accontentarci dell'output da console :)
+
+```html
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ricerca dipendente</title>
+    <link rel="stylesheet" href="RimuoviDipendente.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Ricerca di un dipendente per id:</h1>
+      <form action="DipendentiServlet?action=findId" method="get">
+        <span>Inserisci id dipendente da cercare:</span>
+        <input type="number" name="id" required />
+        <input type="submit" />
+      </form>
+    </div>
+  </body>
+</html>
+```
+
+#### Pagina di ricerca dipendenti
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Insert title here</title>
+    <link rel="stylesheet" href="MostraDipendenti.css" />
+  </head>
+  <body>
+    <form action="DipendentiServlet?action=showAll" method="get">
+      <input type="submit" />
+    </form>
+  </body>
+</html>
+```
+
+#### Pagina di return
+
+```html
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="ReturnPage.css" />
+    <title>Return</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>E adesso?</h1>
+      <a href="MainPage.html">Ritorna alla home</a>
+    </div>
+  </body>
+</html>
+```
+
+### CSS
+
+Seguendo `New > CSS file` posso creare un nuovo file css da importare nel mio
+html.
+
+Esempio file css:
+
+```css
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+html {
+  background-color: #171717;
+}
+
+.container {
+  height: 100vh;
+  width: 100vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.titolo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu {
+  margin-top: 50px;
+}
+
+h1,
+h2 {
+  color: #aaaaaa;
+  margin-top: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  margin-top: 30px;
 }
 ```
