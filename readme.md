@@ -321,6 +321,20 @@ Inserisco un package (in questo package _com_ vuol dire un package generico, com
 
 E' importante ricordare che una servlet agirà solo su una tabella del nostro database, se ho un altra tabella che devo gestire, per esempio ho una tabella dipendenti ed una tabella con amministratori, dovrò creare due servlet diverse dove una si occuperà della tabella dipendenti ed un'altra andrà ad operare sulla tabella amministratori.
 
+E' utile ricordare che quando creo una servlet su Eclipse me la generererà con una struttura del genere e volte mi updaterà il _pom.xml_ con dei tag riguardanti la servlet appena creata:
+
+```java
+// import ...
+
+  @WebServlet("/DipendentiServlet")
+  public class DipendentiServlet extends HttpServlet {
+    // codice ...
+  }
+
+```
+
+Scrivere `@WebServlet("/DipendentiServlet")` e aggiungere tag servlet (o tag simile) con nome DipendentiServlet vuol dire creare la servlet due volte con lo stesso nome ed andrà in errore. Quindi devo sempre accertarmi di eliminare tag servlet dal mio _pom.xml_ o al massimo non aggiungere la riga `@WebServlet("/DipendentiServlet")` nella mia servlet ed importarla diversamente. Io preferisco cancellare eventuali tag correlati alla servlet che ho creato così non ho problemi di servlet multiple.
+
 Una volta inseriti i dati clicco su _Finish_.
 
 ![svtwiz](/res/svtwizard.png)
@@ -478,11 +492,11 @@ L'interfaccia DipendenteDAO verrà sviluppata così:
 
 ```java
 public interface dipendenteDAO {
-	void inserisci(Dipendente d);
-	void aggiorna(Dipendente d);
-	void elimina(int i);
-	Dipendente cercaPerID(int id);
-	List<Dipendente> getAllDipendenti();
+  void inserisci(Dipendente d);
+  void aggiorna(Dipendente d);
+  void elimina(int i);
+  Dipendente cercaPerID(int id);
+  List<Dipendente> getAllDipendenti();
 }
 ```
 
@@ -495,3 +509,139 @@ Il metodo _elimina_ è void per lo stesso motivo dei metodi elencati sopra ma a 
 Il metodo _cercaPerID_ ci restituirà un elemento Dipendente purchè noi gli diamo in input un valore intero (cioè l'id del nostro dipendente da cercare);
 
 Infine il metodo _getAllDipendenti_ ci restituirà semplicemente un arraylist con tutti i dipendenti nel nostro database.
+
+#### Classe DipendenteDAOImpl
+
+La classe DipendenteDAOImpl implementerà l'interfaccia ed il modello dipendente in modo da poter generare oggetti dipendente ed implementare metodi descritti nell'interfaccia.
+
+**Metodo inserisci:**
+Scrivo la query che andremo ad effettuare nel database e wrappo tutto in un try with resources per sviluppare il mio metodo. (Il metodo try with resources è un semplice try catch dove all'interno del try istanzio i metodi che userò e che chiuderà automaticamente alla fine del try senza che debba farlo io. Questo approccio è mantenuto in tutti i metodi della classe).
+
+Come risorse nel try utilizzo un istanza di connessione con il metodo per ottenerla ed il **PreparedStatement** che pre-compila la quary e riutilizzarla più volte con parametri diversi. Si usano i '?' come segnaposto per i valori e per "sanificare" l'input dell'utente per prevenire sql injections, richiamerà quindi la mia query con il PreparedStatement aggiungendo i valori '?' con dei valori da ricercare nel database.
+
+Una volta terminata l'aggiunta dei valori chiudo con un _executeUpdate()_ per eseguire la query di _INSERT_.
+
+Dovrei aver ottenuto un risultato simile:
+
+```java
+public void inserisci(Dipendente d) {
+		String querySql = "INSERT INTO dipendenti (nome, cognome, codice_fiscale, data_nascita, luogo_nascita, email, tel, indirizzo, data_assunzione, ruolo, reparto, stipendio, attivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(querySql)){
+
+			pstmt.setString(1, d.getNome());
+			pstmt.setString(2, d.getCognome());
+			pstmt.setString(3, d.getCodice_fiscale());
+			pstmt.setDate(4, java.sql.Date.valueOf(d.getData_nascita()));
+			pstmt.setString(5, d.getLuogo_nascita());
+			pstmt.setString(6, d.getEmail());
+			pstmt.setString(7, d.getTel());
+			pstmt.setString(8, d.getIndirizzo());
+			pstmt.setDate(9, java.sql.Date.valueOf(d.getData_assunzione()));
+			pstmt.setString(10, d.getRuolo());
+			pstmt.setString(11, d.getReparto());
+			pstmt.setInt(12, d.getStipendio());
+			pstmt.setBoolean(13, d.isAttivo());
+
+			pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			System.err.println("Errore durante l'inserimento del dipendente." + e.getStackTrace()) ;
+		}
+}
+```
+
+Tutti i valori dovranno essere dello stesso tipo del database in modo da non avere conflitti (quindi dove ho un varChar nella tabella avrò una stringa, dove avrò un int avrò un valore int e via dicendo).
+
+Per il valore della data ho dovuto importare la libreria sql date che mi ha permesso di gestire il valore del get della data con _valueOf_.
+
+**Metodo aggiorna:**
+Il metodo aggiorna è un copia ed incolla del metodo inserisci ma con una piccola modifica nella query. Lui mi inserirà dei valori nella tabella Dipendenti ma solo se esiste un id di un dipendente.
+
+```java
+public void aggiorna(Dipendente d) {
+		String querySql = "UPDATE dipendenti SET nome = ?, cognome = ?, codice_fiscale = ?, data_nascita = ?, luogo_nascita= ?, email = ?, tel = ?, indirizzo = ?, data_assunzione = ?, ruolo = ?, reparto = ?, stipendio = ?, attivo = ? WHERE id = ?";
+
+		try (Connection conn = DatabaseConnection.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(querySql)) {
+
+			pstmt.setString(1, d.getNome());
+			pstmt.setString(2, d.getCognome());
+			pstmt.setString(3, d.getCodice_fiscale());
+			pstmt.setDate(4, java.sql.Date.valueOf(d.getData_nascita()));
+			pstmt.setString(5, d.getLuogo_nascita());
+			pstmt.setString(6, d.getEmail());
+			pstmt.setString(7, d.getTel());
+			pstmt.setString(8, d.getIndirizzo());
+			pstmt.setDate(9, java.sql.Date.valueOf(d.getData_assunzione()));
+			pstmt.setString(10, d.getRuolo());
+			pstmt.setString(11, d.getReparto());
+			pstmt.setInt(12, d.getStipendio());
+			pstmt.setBoolean(13, d.isAttivo());
+			pstmt.setInt(14, d.getId());
+
+			int righeAggiornate = pstmt.executeUpdate();
+
+	    if (righeAggiornate > 0) {
+	            System.out.println("Dipendente aggiornato con successo!");
+	    } else {
+	            System.out.println("Nessun dipendente trovato con quell'ID.");
+	    }
+
+		} catch (SQLException e) {
+			System.err.println("Errore durante l'aggiornamento del dipendente.");
+		}
+}
+```
+
+La condizione invece _righeAggiornate_ mi serve per capire se la quary ha modificato delle righe nella tabella, quindi se le righe aggiornate sono positive significa che ha modificato delle righe e quindi un dipendente esiste, al contrario se non esiste non aggiornerà nessuna riga e mi dirà che il dipendente non esiste. E' una condizione che verrà utilizzata anche in altri metodi ed è molto utile.
+
+**Metodo elimina:**
+Il metodo elimina utilizza le stesse risorse dei metodi precedenti, cambia solamente che è più semplice da scrivere in quanto se esiste un id nella mia tabella Dipendenti di un dipendente, me lo andrà a
+
+**Metodo cercaPerID:**
+Il metodo cercaPerID utilizza le stesse risorse utilizzate precedentemente ma con l'aggiunta del ResultSet, è un interfaccia di java che rappresenta il risultato di una query SQL di tipo _SELECT_. E' essenzialmente un cursore che punta alle righe restituite dalla query e permette di navigare attraverso i dati.
+
+Un metodo molto utilizzato dell'interfaccia ResultSet è il metodo .next(), dove semplicemente muove il cursore del ResultSet alla prossima riga disponibile. In questo caso viene utilizzato in un ciclo condizionale dove gli ho detto "Spostati sulla prima riga disponibile se nella quary esiste l'id inserito". Se l'id che avremo inserito esisterà nella tabella Dipendenti allora procederà con l'istruzione condizionale.
+
+```java
+public Dipendente cercaPerID(int id) {
+		String querySql = "SELECT * FROM dipendenti WHERE id = ?";
+		Dipendente d = new Dipendente();
+
+		try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement pstmt = conn.prepareStatement(querySql)) {
+
+			pstmt.setInt(1, id);
+
+			try (ResultSet rs = pstmt.executeQuery()){
+				if (rs.next()) {
+					int idDipendente = rs.getInt("id");
+					String nomeDipendente = rs.getString("nome");
+					String cognomeDipendente = rs.getString("cognome");
+					String codiceFiscale = rs.getString("codice_fiscale");
+					LocalDate dataNascita = rs.getDate("data_nascita").toLocalDate();
+					String luogoNascita = rs.getString("luogo_nascita");
+					String emailDipendente = rs.getNString("email");
+					String telDipendente = rs.getString("tel");
+					String indirizzo = rs.getNString("indirizzo");
+					LocalDate dataAssunzione = rs.getDate("data_assunzione").toLocalDate();
+					String reparto = rs.getNString("reparto");
+					String ruolo = rs.getString("ruolo");
+					int stipendio = rs.getInt("stipendio");
+					boolean attivo = rs.getBoolean("attivo");
+
+					d = new Dipendente (idDipendente, nomeDipendente, cognomeDipendente, codiceFiscale, dataNascita, luogoNascita, emailDipendente, telDipendente, indirizzo, dataAssunzione, ruolo, reparto, stipendio, attivo);
+					System.out.println(d);
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Errore nella ricerca del dipendente.");
+		}
+
+		return d;
+}
+```
+
+Una volta accertato che l'input esiste lui mi creerà l'oggetto dipendente da restituire e me lo mostra in console altrimenti mi darà un errore nel catch che gestirà entrambi i try with resources.
+
+LocalDate è un tipo di dato che mi restituisce una data che però non è compresa nel set di metodi del ResultSet, quidni per ovviare a questo problema faccio un cast con .toLocalDate().
