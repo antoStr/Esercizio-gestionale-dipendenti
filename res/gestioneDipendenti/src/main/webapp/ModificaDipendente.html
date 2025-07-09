@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="AggiuntaDipendente.css" />
+    <title>Modifica dipendente</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Modifica dipendente esistente</h1>
+      <form action="DipendentiServlet?action=update" class="form-wrapper" method="post">
+        <div>
+          <span>Id:</span>
+          <input type="number" name="id" required />
+        </div>
+        <div>
+          <span>Nome:</span>
+          <input type="text" name="nome" required />
+        </div>
+        <div>
+          <span>Cognome:</span>
+          <input type="text" name="cognome" required />
+        </div>
+        <div>
+          <span>Codice fiscale:</span>
+          <input type="text" name="codice_fiscale" required />
+        </div>
+        <div>
+          <span>Data di nascita:</span>
+          <input type="date" name="data_nascita" required />
+        </div>
+        <div>
+          <span>Luogo di nascita:</span>
+          <input type="text" name="luogo_nascita" required />
+        </div>
+        <div>
+          <span>Email:</span>
+          <input type="email" name="email" required />
+        </div>
+        <div>
+          <span>Numero di telefono:</span>
+          <input type="text" name="tel" required />
+        </div>
+        <div>
+          <span>Indirizzo:</span>
+          <input type="text" name="indirizzo" required />
+        </div>
+        <div>
+          <span>Data assunzione:</span>
+          <input type="date" name="data_assunzione" required />
+        </div>
+        <div>
+          <span>Ruolo:</span>
+          <input type="text" name="ruolo" required />
+        </div>
+        <div>
+          <span>Reparto:</span>
+          <input type="text" name="reparto" required />
+        </div>
+        <div>
+          <span>Stipendio:</span>
+          <input type="number" name="stipendio" required />
+        </div>
+        <div>
+          <span>Attività attuale:</span>
+          <select name="attivo" id="">
+            <option value="true">Attivo</option>
+            <option value="false">Non attivo</option>
+          </select>
+        </div>
+        <div>
+          <input type="submit" />
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

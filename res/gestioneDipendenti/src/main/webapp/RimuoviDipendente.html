@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rimuovi dipendente</title>
+    <link rel="stylesheet" href="RimuoviDipendente.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Rimozione di un dipendente</h1>
+      <form action="DipendentiServlet?action=remove" method="post">
+        <span>Inserisci id dipendente da rimuovere:</span>
+        <input type="number" name="id" required />
+        <input type="submit">
+      </form>
+    </div>
+  </body>
+</html>

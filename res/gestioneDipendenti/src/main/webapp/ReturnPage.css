@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+html {
+  color: #fff;
+  background-color: #171717;
+}
+
+h1 {
+  color: rgb(0, 208, 0);
+}
+a {
+  text-decoration: none;
+  color: #fff;
+  margin-top: 60px;
+  cursor: pointer;
+}
+
+.container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

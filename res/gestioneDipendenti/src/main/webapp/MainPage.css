@@ -1,0 +1,43 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+html {
+  background-color: #171717;
+}
+
+.container {
+  height: 100vh;
+  width: 100vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.titolo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu {
+  margin-top: 50px;
+}
+
+h1,
+h2 {
+  color: #aaaaaa;
+  margin-top: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  margin-top: 30px;
+}
