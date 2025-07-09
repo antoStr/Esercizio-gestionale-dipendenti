@@ -53,7 +53,7 @@ create table dipendenti (
   data_nascita date not null,
   luogo_nascita varChar(50) not null,
   email varChar(100) not null unique,
-  telefono int not null unique,
+  tel int not null unique,
   indirizzo varChar(200) not null,
   data_assunzione date not null,
   ruolo varChar(75) not null,
@@ -297,7 +297,20 @@ Per testare se il nostro progetto funziona come dovrebbe e prima di incominciare
 
 ### (?) Che cosa è una servlet?
 
-Una servlet è una classe in Java che interagisce col browser. E' come un intermediario fra il browser ed il nostro codice, quindi agisce come il nostro vecchio main in Java, solamente che adesso si chiama servlet e viene attivata dal nostro server perchè appunto esegue richieste dal browser.
+Una servlet è una classe in Java che vive sul lato server e risponde alle richieste dei client come un browser web.
+
+Essa è come un intermediario: prende la richiesta di un utente, esegue del codice e poi ci dà indietro una risposta.  
+Un esempio semplice è quello del cameriere in una pizzeria: noi ordiniamo una pizza al cameriere, il cameriere prende l'ordine e lo consegna al pizzaiolo che farà la pizza che restituirà al cameriere che, alla fine, ce la consegna e si assicura che noi l'abbiamo ricevuta.
+
+### Struttura di una servlet
+
+La servlet quando viene creata estende la classe HttpServlet, essa è composta da diversi metodi che possiamo implementare e di cui dobbiamo implementarne almeno uno, di solito quando creo la servlet mi mette in automatico un doGet ed un doPost per non restituirci errori.
+
+Il **doGet** è un metodo viene invocato quando la servlet riceve una richiesta http get, tipicamente questo metodo è utilizzato per leggere dei dati.
+
+Il **doPost** invece è un metodo viene invocato in una risposta http post, quindi è una richiesta utilizzata per inviare dati al server.
+
+I metodi **doPut** e **doDelete** svolgono operazioni rispettivamente di aggiornamento ed eliminazione ma sono meno comuni. (da chiedere domani).
 
 ---
 
@@ -324,6 +337,53 @@ Ed infine ho salvato la servlet.
 
 A volte può capitare che dia errore il server e dobbiamo andare a eliminare in _web.xml_ qualsiasi tag **servlet** e **servlet mapping** e poi runnare il server.
 
-Per testare il funzionamento della nostra servlet dobbiamo prima di tutto startare il server, ed una volta fatto accedere dal browser al nostro progetto che nel mio caso è: `http://localhost:8080/gestioneDipendenti/TestSrv`, se visualizzo un qualcosa come `Served at: /gestioneDipendenti` e nella console di Eclipse visualizzo il system out allora la nostra servlet è stata eseguita correttamente e possiamo procedere con il nostro esercizio.
+Per testare il funzionamento della nostra servlet dobbiamo prima di tutto startare il server, ed una volta fatto accedere dal browser al nostro progetto che nel mio caso è:
+
+```
+http://localhost:8080/gestioneDipendenti/TestSrv
+```
+
+Se visualizzo un qualcosa come: `Served at: /gestioneDipendenti` e nella console di Eclipse visualizzo il system out allora la nostra servlet è stata eseguita correttamente e possiamo procedere con il nostro esercizio.
 
 ![alt text](/res/svthello.png)
+
+---
+
+# Strutturazione esercizio
+
+Il progetto di maven ha due view principalmente, quello delle risorse e quello delle risorse deployate nell'app, principalmente sono la stessa cosa, ogni volta che aggiungo qualcosa al progetto, lui si occuperà di smistarlo nella classe e package che gli diciamo di inserire quindi possiamo stare tranquilli.  
+Se non dovessi visualizzare qualcosa durante il progetto posso fare tasto destro sul progetto e seguire `Maven > Update Project ...` che sarebbe come un refresh delle risorse e magari mostrare alcuni files che potrebbero non vedersi inizialmente o che non sono stati caricati.
+
+Il workflow dell'esercizio seguirà questa linea:  
+Accederemo al nostro gestionale tramite una pagina html dal nostro server dove ci saranno diverse pagine collegate alla pagina principale in base all'operazione da svolgere.  
+Una volta selezionata la pagina la servlet svolgerà l'operazione richiesta e verremo reindirizzati ad una pagina che ci dice se vogliamo fare altro con sotto un link per ritornare alla pagina principale.
+
+## Packages e classi
+
+Per incominciare abbiamo bisogno di creare i nostri package per tenere ordinato il nostro esercizio ed abbiamo bisogno di tre package principali:
+
+- **un package controller** che si occuperà di gestire la logica dell'esercizio.
+- **un package dao** che si occuperà di connettersi, accedere al database e svolgere operazioni.
+- **un package model** che avrà la descrizione delle risorse utilizzate nel nostro esercizio.
+
+In questo caso:
+
+Il **package controller** sarà la nostra servlet che gestirà le richieste fra le pagine web.  
+Il **package dao** sarà composto da due classi ed un interfaccia: una classe di connessione al database dove ci connettiamo al database, un interfaccia che descriverà i metodi che dovranno essere implementati nella classe del dao ed infine una classe appunto dao che utilizzerà le classi precedenti per implementare i metodi da utilizzare nella servlet.
+Infine il **package model** sarà composto da una classe che descriverà il modello della struttura del nostro dato che utilizzeremo.
+
+### Package Model
+
+Il package model sarà composto da una classe Dipendente.
+Nella classe dipendente dobbiamo andare a descrivere e costruire il nostro oggetto dipendente.
+
+#### Classe dipendente
+
+La classe Dipendente sarà composta in questo modo:
+
+- Attributi generali privati.
+- Costruttore vuoto per la creazione di oggetti vuoti (sono utili se voglio istanziarli vuoti per poi riempirli)
+- Costruttore con id del dipendente per le operazioni di ricerca.
+- Costruttore senza id del dipendente perchè nel nostro database verrà gestito automaticamente con _auto_increment_
+
+## Pagine HTML / CSS
