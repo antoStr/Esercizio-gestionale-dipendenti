@@ -42,6 +42,8 @@ Perfetto per prima cosa bisogna creare un database ed in questo caso utilizzerem
 
 Ho scelto alcuni valori unique poichè dati come codice fiscale ed email sono univoci e non esistono duplicati nella vita reale.
 
+Infine ho impostato i valori not null perchè non avrebbe senso avere dei dati vuoti in un database e perderebbe di senso averli appunto vuoti.
+
 In futuro potremmo implementare funzioni e stored procedures.
 
 ```sql
@@ -372,18 +374,124 @@ Il **package controller** sarà la nostra servlet che gestirà le richieste fra 
 Il **package dao** sarà composto da due classi ed un interfaccia: una classe di connessione al database dove ci connettiamo al database, un interfaccia che descriverà i metodi che dovranno essere implementati nella classe del dao ed infine una classe appunto dao che utilizzerà le classi precedenti per implementare i metodi da utilizzare nella servlet.
 Infine il **package model** sarà composto da una classe che descriverà il modello della struttura del nostro dato che utilizzeremo.
 
+Le classi che invece verranno create saranno:
+
+- Dipendente (modello del dipendente)
+- DatabaseConnection (classe di connessione al database)
+- DipendenteDAO (interfaccia con i vari metodi da far implementare alla classe che gestirà la logica delle operazioni)
+- DiplententeDAOImpl (classe che implementerà l'interfaccia e svilupperà singolarmente ogni metodo).
+
+Infine nel controller verrà creata la servlet che importerà tutte le risorse e gestirà le richieste http in base all'input dell'utente.
+
+---
+
 ### Package Model
 
 Il package model sarà composto da una classe Dipendente.
 Nella classe dipendente dobbiamo andare a descrivere e costruire il nostro oggetto dipendente.
 
-#### Classe dipendente
+#### Classe Dipendente
 
 La classe Dipendente sarà composta in questo modo:
 
 - Attributi generali privati.
 - Costruttore vuoto per la creazione di oggetti vuoti (sono utili se voglio istanziarli vuoti per poi riempirli)
 - Costruttore con id del dipendente per le operazioni di ricerca.
-- Costruttore senza id del dipendente perchè nel nostro database verrà gestito automaticamente con _auto_increment_
+- Costruttore senza id del dipendente perchè nel nostro database verrà gestito automaticamente con _auto_increment_ e _primary key_.
+- Getter / Setter per prendere e settare valori
+- toString per l'output degli elementi in console. (Non avendo fatto javascript è uno dei metodi che abbiamo per mostrare dell'output direttamente in console).
 
-## Pagine HTML / CSS
+Dovremmo avere una struttura del genere:
+
+```java
+public class Dipendente {
+  private // Attributi . . .
+
+  public Dipendente(){
+  // Costruttore vuoto
+  }
+
+  public Dipendente(int id /*. . . altri attributi */){
+  // Costruttore con id per operazioni di ricerca ed attributi
+  }
+
+  public Dipendente(/*Attributi*/){
+  // Costruttore con attributi
+  }
+
+  // Getter
+
+  // Setter
+
+  // toString
+}
+```
+
+Creando più costruttori abbiamo risolto molti problemi sfruttando una particolarità di Java detta **overloading**, l'overloading in Java è la capacità di definire più metodi con lo stesso nome nella stessa classe, purchè abbiano parametri diversi.
+
+Con l'overloading abbiamo risolto il problema di creare oggetti con e senza id che verranno utilizzati in maniera diversa in base ai metodi dell'interfaccia.
+
+---
+
+### Package dao
+
+DAO vuol dire Data Access Object e ci permette di gestire tutte le operazioni di accesso ai dati in un database, quindi si collegherà al database, eseguire query (in questo caso operazioni CRUD), gestire eventuali errori e chiudere la connessione.
+
+Il package dao sarà composto da un'interfaccia che importerà la classe modello e ci elencherà le operazioni che potremmo svolgere con ogni dipendente, una classe di connessione al database ed infine da una classe dao che implementerà l'interfaccia con i metodi descritti dove verranno sviluppati singolarmente.
+
+#### Classe DatabaseConnection
+
+La classe DatabaseConnection che si occuperà di restituirci la connessione al database quando verrà richiamata.
+
+La mia classe sarà più o meno così:
+
+```java
+public class DatabaseConnection {
+  private static final String url = "jdbc:mysql://localhost:3306/ilNostroDatabase";
+  private static final String username = "ilNostroUsername";
+  private static final String password = "laNostraPassword";
+
+  public static Connection getConnection() {
+    // sviluppo della classe getConnection
+    try {
+      // sviluppo della classe getConnection
+      conn = DriverManager.getConnection(url, username, password); //riga per la connessione
+    } catch (SQLException e){
+      // output di errore con un e.printStackTrace() o con un e.getMessage()
+    }
+  }
+}
+```
+
+Ho inizializzato url, user e password con i modificatori private, static e final in quanto:
+
+- private mi rende queste istanze private solo alla classe e non modificabili altrove in quanto istanze sensibili che non devono essere modificate ed accessibili da nessuna parte.
+- final mi rende le istanza non più modificabili una volta istanziate, quindi non posso richiamarle e modificarle, anche perchè non avrei bisogno di modificare user e password per accedere al mio database e soprattutto non voglio accidentalmente riassegnarle.
+- static mi rende accessibili le istanze e metodi alla mia classe ed a tutti gli oggetti.
+
+#### Interfaccia DipenenteDAO
+
+L'interfaccia DipendenteDAO verrà sviluppata così:
+
+- Import della classe Dipendente
+- Metodi da far implementare alla classe DipendenteDaoImpl
+
+```java
+public interface dipendenteDAO {
+	void inserisci(Dipendente d);
+	void aggiorna(Dipendente d);
+	void elimina(int i);
+	Dipendente cercaPerID(int id);
+	List<Dipendente> getAllDipendenti();
+}
+```
+
+Il metodo _inserisci_ è void perchè è un metodo che non ci restituisce nulla poichè inserirà un dato nel database. Per funzionare ha bisogno di un elemento Dipendente in input.
+
+Il metodo _aggiorna_ stessa cosa come il metodo _inserisci_, è void perchè andrà ad aggiornare un oggetto Dipendente, quindi non ci restituirà nulla ma avrà solo bisogno di un input di un oggetto Dipendente.
+
+Il metodo _elimina_ è void per lo stesso motivo dei metodi elencati sopra ma a differenza sfrutteremo l'id per ricercare nel database un dipendente e se esiste un dipendente con lo stesso id verrà eliminato, quindi in input utilizzerà un valore intero.
+
+Il metodo _cercaPerID_ ci restituirà un elemento Dipendente purchè noi gli diamo in input un valore intero (cioè l'id del nostro dipendente da cercare);
+
+Infine il metodo _getAllDipendenti_ ci restituirà semplicemente un arraylist con tutti i dipendenti nel nostro database.
